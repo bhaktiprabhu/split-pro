@@ -1,15 +1,15 @@
 import { type User } from 'next-auth';
-import { Unsend } from 'unsend';
+import { Resend } from 'resend';
 import { env } from '~/env';
 
-const unsend: Unsend | null = env.UNSEND_API_KEY ? new Unsend(env.UNSEND_API_KEY) : null;
+const resend: Resend | null = env.UNSEND_API_KEY ? new Resend(env.UNSEND_API_KEY) : null;
 
 export async function sendSignUpEmail(email: string, token: string, url: string) {
   const { host } = new URL(url);
 
   if (env.NODE_ENV === 'development') {
     console.log('Sending sign in email', email, url, token);
-    return;
+    // return;
   }
 
   const subject = 'Sign in to SplitPro';
@@ -47,9 +47,9 @@ export async function sendFeedbackEmail(feedback: string, user: User) {
 
 async function sendMail(email: string, subject: string, text: string, html: string) {
   try {
-    if (unsend) {
-      const response = await unsend.emails.send({
-        from: 'hello@auth.splitpro.app',
+    if (resend) {
+      const response = await resend.emails.send({
+        from: 'hello@resend.dev',
         to: email,
         subject,
         text,
@@ -57,10 +57,10 @@ async function sendMail(email: string, subject: string, text: string, html: stri
       });
 
       if (response.data) {
-        console.log('Email sent using unsend', response.data);
+        console.log('Email sent using resend', response.data);
         return;
       } else {
-        console.log('Error sending email using unsend', response.error);
+        console.log('Error sending email using resend', response.error);
       }
     }
   } catch (error) {
