@@ -44,12 +44,12 @@ const ExpenseDetails: React.FC<ExpenseDetailsProps> = ({ user, expense }) => {
             {expense.deletedByUser ? (
               <p className=" text-sm text-orange-600">
                 Deleted by {expense.deletedByUser.name ?? expense.addedByUser.email} on{' '}
-                {format(expense.deletedAt ?? expense.createdAt, 'dd MMM yyyy')}
+                {format(expense.deletedAt ?? expense.createdAt, 'dd MMM yyyy HH:mm')}
               </p>
             ) : (
               <p className=" text-sm text-gray-500">
                 Added by {expense.addedByUser.name ?? expense.addedByUser.email} on{' '}
-                {format(expense.createdAt, 'dd MMM yyyy')}
+                {format(expense.createdAt, 'dd MMM yyyy HH:mm')}
               </p>
             )}
           </div>

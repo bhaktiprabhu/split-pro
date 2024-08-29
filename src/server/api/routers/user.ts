@@ -300,6 +300,14 @@ export const userRouter = createTRPCRouter({
       include: {
         expense: {
           include: {
+            addedByUser: {
+              select: {
+                name: true,
+                email: true,
+                image: true,
+                id: true,
+              },
+            },
             paidByUser: {
               select: {
                 name: true,

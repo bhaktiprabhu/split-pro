@@ -68,7 +68,7 @@ const ActivityPage: NextPageWithUser = ({ user }) => {
                 {expensesQuery.data?.map((e) => (
                   <Link href={`/expenses/${e.expenseId}`} key={e.expenseId} className="flex  gap-2">
                     <div className="mt-1">
-                      <UserAvatar user={e.expense.paidByUser} size={30} />
+                      <UserAvatar user={e.expense.addedByUser} size={30} />
                     </div>
                     <div>
                       {e.expense.deletedByUser ? (
@@ -84,11 +84,11 @@ const ActivityPage: NextPageWithUser = ({ user }) => {
                       ) : (
                         <p className="text-gray-300">
                           <span className="  font-semibold text-gray-300">
-                            {e.expense.paidBy === user.id
+                            {e.expense.addedBy === user.id
                               ? 'You'
-                              : e.expense.paidByUser.name ?? e.expense.paidByUser.email}
+                              : e.expense.addedByUser.name ?? e.expense.addedByUser.email}
                           </span>
-                          {' paid for '}
+                          {' added '}
                           <span className=" font-semibold text-gray-300">{e.expense.name}</span>
                         </p>
                       )}
@@ -105,7 +105,7 @@ const ActivityPage: NextPageWithUser = ({ user }) => {
                         )}
                       </div>
                       <p className="text-xs text-gray-500">
-                        {format(e.expense.expenseDate, 'dd MMM')}
+                        {format(e.expense.expenseDate, 'dd MMM HH:mm')}
                       </p>
                     </div>
                   </Link>
