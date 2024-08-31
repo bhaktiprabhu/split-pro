@@ -101,7 +101,7 @@ const ExpenseDetails: React.FC<ExpenseDetailsProps> = ({ user, expense }) => {
       </div>
       <div className="ml-14 mt-4 flex flex-col gap-4 px-6">
         {expense.expenseParticipants.map((p) => (
-          ((expense.amount ?? 0) - p.amount > 0) && (
+          (p.amount < 0) && (
             <div key={p.userId} className="flex items-center gap-2 text-sm text-gray-500">
               <UserAvatar user={p.user} size={25} />
               <p>
