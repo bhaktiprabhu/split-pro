@@ -290,6 +290,7 @@ export const AddExpensePage: React.FC<{ isStorageConfigured: boolean }> = ({
                 value={description}
                 onChange={(e) => setDescription(e.target.value.toString() ?? '')}
                 className="text-lg placeholder:text-sm"
+                autoFocus
               />
             </div>
             <div className="flex gap-2">

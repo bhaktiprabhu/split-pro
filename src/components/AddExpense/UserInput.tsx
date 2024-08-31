@@ -95,7 +95,6 @@ export const UserInput: React.FC = () => {
         onChange={(e) => setNameOrEmail(e.target.value)}
         onKeyDown={handleKeyDown}
         className="min-w-[100px] flex-grow bg-transparent outline-none placeholder:text-sm focus:ring-0"
-        autoFocus
       />
     </div>
   );
