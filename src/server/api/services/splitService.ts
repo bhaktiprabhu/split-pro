@@ -1,4 +1,4 @@
-import { SplitType, type User } from '@prisma/client';
+import { SplitType, ConfirmationStatus, type User } from '@prisma/client';
 import exp from 'constants';
 import { nanoid } from 'nanoid';
 import { db } from '~/server/db';
@@ -218,6 +218,7 @@ export async function addUserExpense(
           create: participants.map((participant) => ({
             userId: participant.userId,
             amount: toInteger(participant.amount),
+            confirmationStatus: participant.userId === currentUserId ? ConfirmationStatus.CONFIRMED : ConfirmationStatus.UNCONFIRMED
           })),
         },
         fileKey,
@@ -536,18 +537,18 @@ export async function sendExpensePushNotification(expenseId: string) {
 
   const pushData = expense.deletedBy
     ? {
-        title: `${expense.deletedByUser?.name ?? expense.deletedByUser?.email}`,
-        message: `Deleted ${expense.name}`,
-      }
+      title: `${expense.deletedByUser?.name ?? expense.deletedByUser?.email}`,
+      message: `Deleted ${expense.name}`,
+    }
     : expense.splitType === SplitType.SETTLEMENT
       ? {
-          title: `${expense.addedByUser.name ?? expense.addedByUser.email}`,
-          message: `${expense.paidByUser.name ?? expense.paidByUser.email} settled up ${expense.currency} ${toFixedNumber(expense.amount)}`,
-        }
+        title: `${expense.addedByUser.name ?? expense.addedByUser.email}`,
+        message: `${expense.paidByUser.name ?? expense.paidByUser.email} settled up ${expense.currency} ${toFixedNumber(expense.amount)}`,
+      }
       : {
-          title: `${expense.addedByUser.name ?? expense.addedByUser.email}`,
-          message: `${expense.paidByUser.name ?? expense.paidByUser.email} paid  ${expense.currency} ${toFixedNumber(expense.amount)} for ${expense.name}`,
-        };
+        title: `${expense.addedByUser.name ?? expense.addedByUser.email}`,
+        message: `${expense.paidByUser.name ?? expense.paidByUser.email} paid  ${expense.currency} ${toFixedNumber(expense.amount)} for ${expense.name}`,
+      };
 
   const pushNotifications = subscriptions.map((s) => pushNotification(s.subscription, pushData));
 

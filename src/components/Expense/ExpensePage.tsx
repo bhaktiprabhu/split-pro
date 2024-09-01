@@ -26,6 +26,34 @@ const ExpenseDetails: React.FC<ExpenseDetailsProps> = ({ user, expense }) => {
 
   const CategoryIcon = CategoryIcons[expense.category] ?? Banknote;
 
+  const handleConfirm = async (participantId: number) => {
+    // try {
+    //   const response = await fetch('/api/confirm-participant', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify({ userId: participantId, expenseId: expense.id }),
+    //   });
+
+    //   if (!response.ok) {
+    //     throw new Error('Failed to update confirmation status');
+    //   }
+
+    //   // Update state
+    //   setParticipants((prev) =>
+    //     prev.map((p) =>
+    //       p.userId === participantId
+    //         ? { ...p, confirmationStatus: 'CONFIRMED' }
+    //         : p
+    //     )
+    //   );
+    // } catch (error) {
+    //   console.error(error);
+    // }
+    console.log('*****************************CONFIRMED BY PARTICIPANT********************************');
+  };
+
   return (
     <div className="">
       <div className="mb-4 flex items-start justify-between gap-2 px-6">
@@ -101,14 +129,30 @@ const ExpenseDetails: React.FC<ExpenseDetailsProps> = ({ user, expense }) => {
       </div>
       <div className="ml-14 mt-4 flex flex-col gap-4 px-6">
         {expense.expenseParticipants.map((p) => (
-          <div key={p.userId} className="flex items-center gap-2 text-sm text-gray-500">
-            <UserAvatar user={p.user} size={25} />
-            <p>
-              {user.id === p.userId ? 'You Owe' : `${p.user.name ?? p.user.email} owes`}{' '}
-              {expense.currency}{' '}
-              {toUIString((expense.paidBy === p.userId ? expense.amount ?? 0 : 0) - p.amount)}
-            </p>
-          </div>
+          (p.amount < 0) && (
+            <div key={p.userId} className="flex items-center gap-2 text-sm text-gray-500">
+              <UserAvatar user={p.user} size={25} />
+              <p>
+                {user.id === p.userId ? 'You Owe' : `${p.user.name ?? p.user.email} owes`}{' '}
+                {expense.currency}{' '}
+                {toUIString((expense.paidBy === p.userId ? expense.amount ?? 0 : 0) - p.amount)}
+
+                {/* Show confirmation status for all users */}
+                {p.confirmationStatus === 'CONFIRMED' ? (
+                  <span className="text-green-500">✔️</span>  // Green tick
+                ) : (
+                  <span className="text-red-500">Unconfirmed</span>
+                )}
+
+                {/* Show Confirm button only for the session user if not confirmed */}
+                {user.id === p.userId && p.confirmationStatus !== 'CONFIRMED' && (
+                  <button onClick={() => handleConfirm(p.userId)} className="text-blue-500">
+                    Confirm
+                  </button>
+                )}
+              </p>
+            </div>
+          )
         ))}
       </div>
     </div>
