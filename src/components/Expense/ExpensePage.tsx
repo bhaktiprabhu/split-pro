@@ -5,10 +5,11 @@ import React from 'react';
 import { toUIString } from '~/utils/numbers';
 import { UserAvatar } from '../ui/avatar';
 import Image from 'next/image';
+import { api } from '~/utils/api';
 import { AppDrawer, Drawer, DrawerContent, DrawerTrigger } from '../ui/drawer';
 import { Separator } from '../ui/separator';
 import { CategoryIcons } from '../ui/categoryIcons';
-import { Banknote } from 'lucide-react';
+import { Banknote, CheckCircle } from 'lucide-react';
 import { env } from '~/env';
 
 type ExpenseDetailsProps = {
@@ -26,34 +27,19 @@ const ExpenseDetails: React.FC<ExpenseDetailsProps> = ({ user, expense }) => {
 
   const CategoryIcon = CategoryIcons[expense.category] ?? Banknote;
 
-  const handleConfirm = async (participantId: number) => {
-    // try {
-    //   const response = await fetch('/api/confirm-participant', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({ userId: participantId, expenseId: expense.id }),
-    //   });
+  const confirmExpenseMutation = api.user.confirmExpense.useMutation({
+    onSuccess: () => {
+      window.location.reload();
+    },
+  });
 
-    //   if (!response.ok) {
-    //     throw new Error('Failed to update confirmation status');
-    //   }
-
-    //   // Update state
-    //   setParticipants((prev) =>
-    //     prev.map((p) =>
-    //       p.userId === participantId
-    //         ? { ...p, confirmationStatus: 'CONFIRMED' }
-    //         : p
-    //     )
-    //   );
-    // } catch (error) {
-    //   console.error(error);
-    // }
-    console.log('*****************************CONFIRMED BY PARTICIPANT********************************');
+  function handleConfirm(){
+    confirmExpenseMutation.mutate({
+      expenseId: expense.id,
+      userId: user.id,
+    });
   };
-
+  
   return (
     <div className="">
       <div className="mb-4 flex items-start justify-between gap-2 px-6">
@@ -132,23 +118,22 @@ const ExpenseDetails: React.FC<ExpenseDetailsProps> = ({ user, expense }) => {
           (p.amount < 0) && (
             <div key={p.userId} className="flex items-center gap-2 text-sm text-gray-500">
               <UserAvatar user={p.user} size={25} />
-              <p>
+              <p className="inline-flex items-center gap-2">
                 {user.id === p.userId ? 'You Owe' : `${p.user.name ?? p.user.email} owes`}{' '}
                 {expense.currency}{' '}
-                {toUIString((expense.paidBy === p.userId ? expense.amount ?? 0 : 0) - p.amount)}
+                {toUIString((expense.paidBy === p.userId ? expense.amount ?? 0 : 0) - p.amount)}{' '}
 
-                {/* Show confirmation status for all users */}
+                {/* Show confirmation status based on the conditions */}
                 {p.confirmationStatus === 'CONFIRMED' ? (
-                  <span className="text-green-500">✔️</span>  // Green tick
+                  <CheckCircle className="ml-2 text-green-500" size={16} style={{ marginLeft: 0 }}/>
                 ) : (
-                  <span className="text-red-500">Unconfirmed</span>
-                )}
-
-                {/* Show Confirm button only for the session user if not confirmed */}
-                {user.id === p.userId && p.confirmationStatus !== 'CONFIRMED' && (
-                  <button onClick={() => handleConfirm(p.userId)} className="text-blue-500">
-                    Confirm
-                  </button>
+                  user.id === p.userId ? (
+                    <button onClick={() => handleConfirm()} className="text-blue-500">
+                      Confirm
+                    </button>
+                  ) : (
+                    <span className="text-red-500">Unconfirmed</span>
+                  )
                 )}
               </p>
             </div>

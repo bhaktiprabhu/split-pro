@@ -4,6 +4,7 @@ import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
 import { db } from '~/server/db';
 import {
   addUserExpense,
+  confirmUserExpense,
   deleteExpense,
   getCompleteFriendsDetails,
   getCompleteGroupDetails,
@@ -179,6 +180,22 @@ export const userRouter = createTRPCRouter({
       } catch (error) {
         console.error(error);
         throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to create expense' });
+      }
+    }),
+
+    confirmExpense: protectedProcedure
+    .input(
+      z.object({
+        expenseId: z.string(),
+        userId: z.number(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      try {
+        await confirmUserExpense(input.expenseId, input.userId);
+      } catch (error) {
+        console.error(error);
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to confirm expense' });
       }
     }),
 

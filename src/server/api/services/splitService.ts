@@ -296,6 +296,37 @@ export async function addUserExpense(
   return result[0];
 }
 
+
+export async function confirmUserExpense(
+  expenseId: string,
+  userId: number,
+) {
+  const operations = [];
+
+  // Create expense operation
+  operations.push(
+    db.expenseParticipant.update({
+      where: {
+        expenseId_userId: {
+          expenseId,
+          userId,
+        },
+      },
+      data: {
+        confirmationStatus: ConfirmationStatus.CONFIRMED,
+      },
+    }),
+  );
+
+  // Execute all operations in a transaction
+  const result = await db.$transaction(operations);
+  if (result[0]) {
+    // sendExpensePushNotification(result[0].id).catch(console.error);
+    console.log('Status Confirmed!')
+  }
+  return result[0];
+}
+
 async function updateGroupExpenseForIfBalanceIsZero(
   userId: number,
   friendIds: Array<number>,
